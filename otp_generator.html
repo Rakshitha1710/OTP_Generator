@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Generator</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: #1e293b;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: #ffffff;
+            padding: 35px 30px;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #172554;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px 18px;
+            background: #1e3a8a;
+            color: #ffffff;
+            border: none;
+            border-radius: 7px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        button:hover:not(:disabled) {
+            background: #172554;
+        }
+
+        button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .otp-box {
+            margin-top: 24px;
+            padding: 20px 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .otp-label {
+            color: #64748b;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+
+        #otpOutput {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 5px;
+            color: #172554;
+            overflow-wrap: anywhere;
+        }
+
+        #timer {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+            min-height: 20px;
+        }
+
+        #count {
+            margin-top: 14px;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        #limitMessage {
+            margin-top: 16px;
+            color: #b91c1c;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .footer {
+            margin-top: 26px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+            color: #94a3b8;
+            font-size: 11px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>OTP Generator</h1>
+
+        <p class="subtitle">
+            Generate a one-time password securely and easily.
+        </p>
+
+        <button id="generateBtn" onclick="OtpHandling()">
+            Generate OTP
+        </button>
+
+        <div class="otp-box">
+            <p class="otp-label">Your One-Time Password</p>
+            <p id="otpOutput">------</p>
+        </div>
+
+        <p id="timer">Click the button to generate an OTP.</p>
+
+        <p id="count">OTP Generated: 0/5</p>
+
+        <p id="limitMessage" class="hidden">
+            You have reached your limit!
+        </p>
+
+        <div class="footer">
+            OTP GENERATOR · DEMO APPLICATION
+        </div>
+
+    </div>
+
+    <script>
+        let count = 0;
+        let cooldown = false;
+        let timerInterval;
+
+        function generateOTP() {
+            let otp = Math.floor(100000 + Math.random() * 900000);
+
+            console.log("Generated OTP:", otp);
+
+            document.getElementById("otpOutput").textContent = otp;
+
+            return otp;
+        }
+
+        function OtpHandling() {
+            if (cooldown || count >= 5) {
+                return;
+            }
+
+            generateOTP();
+            count++;
+
+            document.getElementById("count").textContent =
+                "OTP Generated: " + count + "/5";
+
+            const button = document.getElementById("generateBtn");
+            const timer = document.getElementById("timer");
+            const limitMessage = document.getElementById("limitMessage");
+
+            if (count === 5) {
+                button.disabled = true;
+                button.textContent = "Limit Reached";
+
+                timer.textContent = "";
+                limitMessage.classList.remove("hidden");
+
+                console.log("You have reached your limit!");
+                console.log("OTP generation stopped.");
+
+                return;
+            }
+
+            cooldown = true;
+            button.disabled = true;
+
+            let remaining = 30;
+
+            timer.textContent =
+                "You can generate another OTP in " + remaining + " seconds.";
+
+            timerInterval = setInterval(() => {
+                remaining--;
+
+                timer.textContent =
+                    "You can generate another OTP in " + remaining + " seconds.";
+
+                if (remaining <= 0) {
+                    clearInterval(timerInterval);
+
+                    cooldown = false;
+                    button.disabled = false;
+
+                    timer.textContent =
+                        "You can generate another OTP now.";
+                }
+            }, 1000);
+        }
+    </script>
+
+</body>
+</html>
